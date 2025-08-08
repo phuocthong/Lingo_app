@@ -481,7 +481,8 @@ const logout = () => {
 
 .profile-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+
   gap: 32px;
   justify-content: center;
   margin-top: 24px;
@@ -494,7 +495,6 @@ const logout = () => {
   font-size: 16px;
   font-weight: 700;
   display: flex;
-  align-items: center;
   gap: 8px;
 }
 
