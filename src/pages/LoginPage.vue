@@ -35,6 +35,8 @@
                 placeholder="Nhập tên đăng nhập của bạn"
                 class="form-input"
                 :class="{ error: errors.username }"
+                @keyup.enter="handleLogin"
+                :disabled="loading"
               />
             </div>
             <span v-if="errors.username" class="error-message">{{ errors.username }}</span>
@@ -50,6 +52,8 @@
                 placeholder="Nhập mật khẩu"
                 class="form-input"
                 :class="{ error: errors.password }"
+                @keyup.enter="handleLogin"
+                :disabled="loading"
               />
               <button type="button" class="password-toggle" @click="showPassword = !showPassword">
                 <svg
@@ -107,9 +111,48 @@
 
           <!-- Login Button -->
           <button type="submit" class="login-button" :disabled="loading" @click="handleLogin">
+            <q-spinner v-if="loading" size="20px" color="white" />
             <span v-if="loading">Đang đăng nhập...</span>
             <span v-else>Đăng nhập</span>
           </button>
+
+          <!-- Demo Account Info -->
+          <div class="demo-info">
+            <p class="demo-title">🚀 Tài khoản demo:</p>
+            <div class="demo-accounts">
+              <button @click="fillDemoAccount('admin')" class="demo-btn">
+                Admin (admin / password123)
+              </button>
+              <button @click="fillDemoAccount('minhanh')" class="demo-btn">
+                Minh Anh (minhanh / password123)
+              </button>
+            </div>
+          </div>
+
+          <!-- Backend Status -->
+          <div class="backend-status">
+            <div
+              class="status-indicator"
+              :class="{ online: backendOnline, offline: !backendOnline }"
+            >
+              <q-icon
+                :name="backendOnline ? 'cloud_done' : 'cloud_off'"
+                :color="backendOnline ? 'green' : 'orange'"
+                size="16px"
+              />
+              <span> Backend: {{ backendOnline ? 'Đã kết nối' : 'Chưa kết nối' }} </span>
+              <q-btn
+                v-if="!backendOnline"
+                @click="checkBackendStatus"
+                size="xs"
+                flat
+                no-caps
+                color="primary"
+              >
+                Kiểm tra
+              </q-btn>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -117,9 +160,16 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { login } from '../utils/auth.js'
+import { auth } from '../utils/auth.js'
+import { apiService } from '../services/api.js'
+import { createNotification } from '../utils/notifications.js'
+
+// Simple notification fallback
+const showSimpleNotification = (message, type = 'info') => {
+  createNotification(message, type)
+}
 
 const router = useRouter()
 
@@ -132,10 +182,59 @@ const loginForm = reactive({
 
 const showPassword = ref(false)
 const loading = ref(false)
+const backendOnline = ref(false)
 const errors = reactive({
   username: '',
   password: '',
 })
+
+// Check if user is already logged in
+onMounted(async () => {
+  if (auth.isLoggedIn()) {
+    router.push('/dashboard')
+    return
+  }
+
+  // Check backend status
+  await checkBackendStatus()
+})
+
+// Check backend connectivity
+const checkBackendStatus = async () => {
+  try {
+    // In cloud environment, backend won't be available at localhost
+    // So we'll skip the check and default to demo mode
+    const isCloudEnvironment =
+      window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'
+
+    if (isCloudEnvironment) {
+      backendOnline.value = false
+      console.log('Cloud environment detected, using demo mode')
+      return
+    }
+
+    // Only check localhost backend when running locally
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 3000)
+
+    const response = await fetch('http://localhost:3001/', {
+      method: 'GET',
+      signal: controller.signal,
+    })
+
+    clearTimeout(timeoutId)
+
+    if (response.ok) {
+      backendOnline.value = true
+      showSimpleNotification('Backend đã kết nối thành công! ✅', 'success')
+    } else {
+      backendOnline.value = false
+    }
+  } catch (error) {
+    backendOnline.value = false
+    console.log('Backend not available, using demo mode')
+  }
+}
 
 // Validation
 const validateForm = () => {
@@ -167,20 +266,104 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    let result
 
-    // Use the existing auth utility
-    login()
+    if (backendOnline.value) {
+      // Try real API login
+      result = await auth.login(loginForm.username, loginForm.password, loginForm.rememberMe)
+    } else {
+      // Demo mode login
+      result = await simulateLogin()
+    }
 
-    // Navigate to dashboard
-    router.push('/dashboard')
+    if (result.success) {
+      showSimpleNotification(`Chào mừng ${result.user.name}! 🎉`, 'success')
+
+      // Small delay for better UX
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 500)
+    } else {
+      showSimpleNotification(result.message || 'Đăng nhập thất bại', 'error')
+      errors.password = result.message || 'Đăng nhập thất bại'
+    }
   } catch (error) {
-    console.error('Login failed:', error)
-    errors.password = 'Đăng nhập thất bại. Vui lòng thử lại.'
+    console.error('Login error:', error)
+
+    if (error.message.includes('fetch')) {
+      showSimpleNotification('Không thể kết nối đến server. Đang sử dụng chế độ demo.', 'error')
+      backendOnline.value = false
+
+      // Try demo login as fallback
+      const result = await simulateLogin()
+      if (result.success) {
+        showSimpleNotification('Đang sử dụng chế độ demo', 'info')
+        setTimeout(() => router.push('/dashboard'), 500)
+      }
+    } else {
+      showSimpleNotification(error.message || 'Đăng nhập thất bại', 'error')
+    }
   } finally {
     loading.value = false
   }
+}
+
+// Simulate login for demo mode
+const simulateLogin = async () => {
+  // Check demo credentials
+  const demoAccounts = {
+    admin: { name: 'Admin', level: 10, xp: 2500, streak: 15 },
+    minhanh: { name: 'Minh Anh', level: 8, xp: 1800, streak: 12 },
+    thanhhoa: { name: 'Thành Hòa', level: 6, xp: 1200, streak: 8 },
+    nguoidung: { name: 'Người dùng', level: 5, xp: 1000, streak: 10 },
+  }
+
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
+  const account = demoAccounts[loginForm.username.toLowerCase()]
+
+  if (account && loginForm.password === 'password123') {
+    // Simulate successful login
+    const user = {
+      id: Date.now(),
+      username: loginForm.username,
+      email: `${loginForm.username}@example.com`,
+      name: account.name,
+      avatar:
+        'https://cdn.builder.io/o/assets%2Ff046890c17ca436cab38cffc651fb9cb%2Fd0e1a2af26da485f8609e3080da7d7b8?alt=media&token=aca82dee-2b72-4297-9d9d-7921d490a327&apiKey=f046890c17ca436cab38cffc651fb9cb',
+      level: account.level,
+      xp: account.xp,
+      streak: account.streak,
+    }
+
+    const token = 'demo_token_' + Date.now()
+
+    // Store token and user data
+    if (loginForm.rememberMe) {
+      localStorage.setItem('user_token', token)
+      localStorage.setItem('user_data', JSON.stringify(user))
+    } else {
+      sessionStorage.setItem('user_session', token)
+      sessionStorage.setItem('user_data', JSON.stringify(user))
+    }
+
+    return { success: true, user, token }
+  } else {
+    return {
+      success: false,
+      message: 'Tên đăng nhập hoặc mật khẩu không đúng',
+    }
+  }
+}
+
+// Fill demo account credentials
+const fillDemoAccount = (accountType) => {
+  loginForm.username = accountType
+  loginForm.password = 'password123'
+  loginForm.rememberMe = false
+
+  showSimpleNotification(`Đã điền thông tin tài khoản ${accountType}`, 'info')
 }
 </script>
 
@@ -224,11 +407,6 @@ const handleLogin = async () => {
   width: 100%;
   max-width: 454px;
   padding: 0 20px;
-}
-
-.brand-header {
-  margin-bottom: 40px;
-  text-align: center;
 }
 
 .page-header {
@@ -343,6 +521,11 @@ const handleLogin = async () => {
   border-color: #ef4444;
 }
 
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .password-toggle {
   position: absolute;
   right: 20px;
@@ -422,6 +605,10 @@ const handleLogin = async () => {
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .login-button:hover:not(:disabled) {
@@ -432,6 +619,69 @@ const handleLogin = async () => {
 .login-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
+}
+
+/* Demo Info */
+.demo-info {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.demo-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0369a1;
+  margin: 0 0 12px 0;
+}
+
+.demo-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.demo-btn {
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.demo-btn:hover {
+  background: #0284c7;
+}
+
+/* Backend Status */
+.backend-status {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.status-indicator.online {
+  color: #059669;
+}
+
+.status-indicator.offline {
+  color: #d97706;
 }
 
 /* Responsive Design */
@@ -467,10 +717,6 @@ const handleLogin = async () => {
     max-width: 300px;
   }
 
-  .brand-image {
-    max-width: 250px;
-  }
-
   .auth-section {
     padding: 0 10px;
   }
@@ -495,6 +741,10 @@ const handleLogin = async () => {
   .tab-button {
     font-size: 14px;
     height: 36px;
+  }
+
+  .demo-accounts {
+    gap: 6px;
   }
 }
 

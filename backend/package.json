@@ -1,0 +1,36 @@
+{
+  "name": "lingo-challenge-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "ElysiaJS backend for Lingo Challenge vocabulary app",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "bun --watch src/index.js",
+    "start": "bun src/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "bun src/scripts/migrate.js",
+    "db:seed": "bun src/scripts/seed.js",
+    "db:studio": "drizzle-kit studio",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "elysia": "^1.0.0",
+    "@elysiajs/cors": "^1.0.0",
+    "@elysiajs/static": "^1.0.0",
+    "@elysiajs/swagger": "^1.0.0",
+    "drizzle-orm": "^0.29.0",
+    "better-sqlite3": "^9.2.2",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.5",
+    "bun-types": "latest"
+  },
+  "engines": {
+    "bun": ">=1.0.0"
+  }
+}

@@ -3,7 +3,16 @@
 
 import { defineConfig } from '#q-app/wrappers'
 
-export default defineConfig((/* ctx */) => {
+export default defineConfig((ctx) => {
+  // Detect if running in hosted/cloud environment
+  const isHosted =
+    process.env.NODE_ENV === 'production' ||
+    process.env.GITPOD_WORKSPACE_ID ||
+    process.env.CODESPACE_NAME ||
+    process.env.FLY_APP_NAME ||
+    process.env.VERCEL ||
+    process.env.NETLIFY
+
   return {
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
@@ -53,26 +62,48 @@ export default defineConfig((/* ctx */) => {
       // polyfillModulePreload: true,
       // distDir
 
-      // extendViteConf (viteConf) {},
+      extendViteConf(viteConf) {
+        // Handle hosted environment configuration
+        if (isHosted) {
+          // Disable HMR client in hosted environments
+          viteConf.server = viteConf.server || {}
+          viteConf.server.hmr = false
+
+          // Add error handling for WebSocket connections
+          viteConf.define = viteConf.define || {}
+          viteConf.define.__IS_HOSTED__ = JSON.stringify(true)
+        }
+      },
       // viteVuePluginOptions: {},
 
       vitePlugins: [
-        [
-          'vite-plugin-checker',
-          {
-            eslint: {
-              lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
-              useFlatConfig: true,
-            },
-          },
-        ],
+        // Only enable vite-plugin-checker in local development
+        ...(!isHosted
+          ? [
+              [
+                'vite-plugin-checker',
+                {
+                  eslint: {
+                    lintCommand: 'eslint -c ./eslint.config.js "./src*/**/*.{js,mjs,cjs,vue}"',
+                    useFlatConfig: true,
+                  },
+                },
+              ],
+            ]
+          : []),
       ],
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
       // https: true,
-      open: true, // opens browser window automatically
+      open: !isHosted, // don't auto-open browser in hosted environments
+      hmr: isHosted
+        ? false
+        : {
+            // Disable HMR in hosted environments to prevent WebSocket errors
+            overlay: true,
+          },
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
@@ -90,7 +121,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify'],
     },
 
     // animations: 'all', // --- includes all animations
