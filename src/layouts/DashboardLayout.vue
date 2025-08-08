@@ -10,7 +10,7 @@
         </div>
 
         <!-- Navigation -->
-        <div class="header-nav">
+        <div class="header-nav" v-if="!$q.screen.lt.md">
           <q-btn flat no-caps class="nav-btn" @click="$router.push('/dashboard')">
             Trang chủ
           </q-btn>
@@ -57,6 +57,18 @@
             <q-icon name="logout" size="16px" class="q-mr-xs" />
             Đăng xuất
           </q-btn>
+
+          <!-- Mobile menu -->
+          <q-btn
+            flat
+            dense
+            round
+            icon="menu"
+            aria-label="Menu"
+            @click="toggleMobileMenu"
+            v-if="$q.screen.lt.md"
+            class="mobile-menu-btn"
+          />
         </div>
       </q-toolbar>
     </q-header>
@@ -65,14 +77,60 @@
     <q-page-container class="dashboard-container">
       <router-view />
     </q-page-container>
+
+    <!-- Mobile Menu Drawer -->
+    <q-drawer
+      v-model="mobileMenuOpen"
+      side="right"
+      overlay
+      behavior="mobile"
+      width="250"
+      class="mobile-drawer"
+    >
+      <div class="mobile-menu">
+        <q-list>
+          <q-item clickable @click="$router.push('/dashboard')" v-close-popup>
+            <q-item-section>
+              <q-item-label>Trang chủ</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable @click="$router.push('/dashboard/introduction')" v-close-popup>
+            <q-item-section>
+              <q-item-label>Giới thiệu</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item clickable @click="$router.push('/dashboard/challenges')" v-close-popup>
+            <q-item-section>
+              <q-item-label>Thử thách</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-separator class="q-my-md" />
+
+          <q-item clickable @click="logout" v-close-popup>
+            <q-item-section>
+              <q-item-label>Đăng xuất</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+    </q-drawer>
   </q-layout>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { auth } from '../utils/auth.js'
 
 const router = useRouter()
+const mobileMenuOpen = ref(false)
+
+const toggleMobileMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value
+}
 
 // Auto-login for demo purposes
 // Authentication is now handled by router guards
@@ -243,9 +301,7 @@ const logout = () => {
   }
 
   .user-stats {
-    flex-direction: column;
-    gap: 4px;
-    align-items: flex-end;
+    display: none;
   }
 
   .stat-item {
@@ -253,6 +309,10 @@ const logout = () => {
   }
 
   .user-name {
+    display: none;
+  }
+
+  .logout-btn {
     display: none;
   }
 }

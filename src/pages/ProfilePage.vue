@@ -174,6 +174,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import ProfileSidebar from '../components/ProfileSidebar.vue'
+import { auth } from '../utils/auth.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -200,6 +201,7 @@ const editProfile = () => {
 
 const logout = () => {
   // Handle logout logic
+  auth.logout()
   router.push('/')
 }
 </script>

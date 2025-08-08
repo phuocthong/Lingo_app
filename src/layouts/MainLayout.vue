@@ -12,10 +12,10 @@
         <!-- Navigation -->
         <div class="header-nav" v-if="!$q.screen.lt.md">
           <q-btn flat no-caps class="nav-btn" @click="$router.push('/')"> Trang chủ </q-btn>
-          <q-btn flat no-caps class="nav-btn"  @click="$router.push('/introduction')"> Giới thiệu </q-btn>
-          <q-btn flat no-caps class="nav-btn" >
-            Thử thách
+          <q-btn flat no-caps class="nav-btn" @click="$router.push('/introduction')">
+            Giới thiệu
           </q-btn>
+          <q-btn flat no-caps class="nav-btn"> Thử thách </q-btn>
         </div>
 
         <q-space />

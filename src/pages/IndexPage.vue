@@ -1042,6 +1042,21 @@ const getCurrentLeaderboard = () => {
 }
 
 /* Responsive modal styles */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .chat-section {
+    order: 1; /* Đưa chat lên đầu */
+  }
+
+  .sidebar-section {
+    order: 2; /* Sidebar xuống dưới */
+  }
+}
+
 @media (max-width: 768px) {
   .details-dropdown .q-btn__content {
     font-size: 11px;
@@ -1061,6 +1076,10 @@ const getCurrentLeaderboard = () => {
 
   .answerer-mini-time {
     font-size: 10px;
+  }
+
+  .chat-card {
+    height: 600px;
   }
 }
 </style>
