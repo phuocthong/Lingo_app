@@ -834,7 +834,8 @@ const logout = () => {
   }
 
   .profile-content {
-    margin-left: 0;
+    width: 100%;
+    margin: auto;
     padding: 16px;
   }
 
@@ -863,6 +864,7 @@ const logout = () => {
   }
 
   .profile-actions {
+    width: 100%;
     grid-template-columns: 1fr;
     gap: 12px;
   }
