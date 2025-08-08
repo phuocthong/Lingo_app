@@ -138,7 +138,7 @@
                   label="▼ Top 5 nhanh nhất"
                 >
                   <div class="top-answerers-dropdown">
-                    <div class="dropdown-title">Top 5 người trả lời nhanh nhất</div>
+                    <div class="dropdown-title">Top 5 người trả l���i nhanh nhất</div>
                     <div
                       v-for="(answerer, aIndex) in item.participants.slice(0, 5)"
                       :key="answerer.id"
@@ -409,6 +409,12 @@ const sendMessage = async () => {
 
 // Message management
 const addBotMessage = (text, participants = null) => {
+  // Ensure chatMessages is an array
+  if (!Array.isArray(chatMessages.value)) {
+    console.warn('chatMessages.value is not an array, reinitializing...')
+    chatMessages.value = []
+  }
+
   chatMessages.value.push({
     type: 'bot',
     text,
@@ -419,6 +425,11 @@ const addBotMessage = (text, participants = null) => {
 }
 
 const addAnswerMessage = (text, timestamp) => {
+  // Ensure chatMessages is an array
+  if (!Array.isArray(chatMessages.value)) {
+    chatMessages.value = []
+  }
+
   chatMessages.value.push({
     type: 'answer',
     text,
@@ -428,6 +439,11 @@ const addAnswerMessage = (text, timestamp) => {
 }
 
 const addUserAnswerMessage = (userName, answer, timestamp) => {
+  // Ensure chatMessages is an array
+  if (!Array.isArray(chatMessages.value)) {
+    chatMessages.value = []
+  }
+
   chatMessages.value.push({
     type: 'userAnswer',
     userName,
