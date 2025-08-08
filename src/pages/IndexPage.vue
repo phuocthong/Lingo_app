@@ -22,7 +22,7 @@
           </q-card-section>
 
           <!-- Chat Messages -->
-          <q-card-section class="chat-messages" ref="chatMessages">
+          <q-card-section class="chat-messages" ref="chatMessagesContainer">
             <!-- Dynamic Messages -->
             <div v-for="(message, index) in chatMessages" :key="index" class="message-wrapper">
               <!-- Bot Message -->
@@ -304,11 +304,11 @@ const isBotActive = ref(false)
 const currentUser = ref(null)
 const userRank = ref(null)
 const totalPlayers = ref(0)
-const chatMessages_ref = ref(null)
+const chatMessagesContainer = ref(null)
 const isDemoMode = ref(false)
 
 // Computed properties
-const chatMessagesElement = computed(() => chatMessages_ref.value)
+const chatMessagesElement = computed(() => chatMessagesContainer.value)
 
 // Initialize component
 onMounted(async () => {
