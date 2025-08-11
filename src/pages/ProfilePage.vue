@@ -174,6 +174,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import ProfileSidebar from '../components/ProfileSidebar.vue'
+import { auth } from '../utils/auth.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -200,6 +201,7 @@ const editProfile = () => {
 
 const logout = () => {
   // Handle logout logic
+  auth.logout()
   router.push('/')
 }
 </script>
@@ -479,7 +481,8 @@ const logout = () => {
 
 .profile-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+
   gap: 32px;
   justify-content: center;
   margin-top: 24px;
@@ -492,7 +495,6 @@ const logout = () => {
   font-size: 16px;
   font-weight: 700;
   display: flex;
-  align-items: center;
   gap: 8px;
 }
 
@@ -832,7 +834,8 @@ const logout = () => {
   }
 
   .profile-content {
-    margin-left: 0;
+    width: 100%;
+    margin: auto;
     padding: 16px;
   }
 
@@ -861,6 +864,7 @@ const logout = () => {
   }
 
   .profile-actions {
+    width: 100%;
     grid-template-columns: 1fr;
     gap: 12px;
   }
