@@ -268,7 +268,7 @@ const getStatusText = (status) => {
   display: flex;
   min-height: 100vh;
   background: #ffffff;
-  max-width: 1800px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -609,6 +609,7 @@ const getStatusText = (status) => {
   }
 
   .rewards-content {
+    max-width: 100%;
     padding: 16px;
   }
 
@@ -661,6 +662,9 @@ const getStatusText = (status) => {
 
   .points-amount {
     font-size: 18px;
+  }
+  .rewards-page {
+    padding: 0px !important;
   }
 }
 </style>

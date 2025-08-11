@@ -99,6 +99,20 @@ const route = useRoute()
 const sidebarCollapsed = ref(false)
 const activeTab = ref('profile')
 
+const checkMobile = () => window.innerWidth <= 768
+
+onMounted(() => {
+  if (checkMobile()) {
+    sidebarCollapsed.value = false
+  }
+})
+
+window.addEventListener('resize', () => {
+  if (checkMobile()) {
+    sidebarCollapsed.value = false
+  }
+})
+
 const userAvatar = ref(
   'https://cdn.builder.io/o/assets%2Ff046890c17ca436cab38cffc651fb9cb%2Fd0e1a2af26da485f8609e3080da7d7b8?alt=media&token=aca82dee-2b72-4297-9d9d-7921d490a327&apiKey=f046890c17ca436cab38cffc651fb9cb',
 )
@@ -329,10 +343,21 @@ onMounted(() => {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .profile-sidebar {
+    width: 100%;
+    height: auto;
+  }
+}
+
 @media (max-width: 768px) {
   .profile-sidebar {
     width: 100%;
     height: auto;
+  }
+
+  .sidebar-header {
+    display: none;
   }
 
   .sidebar-collapsed {

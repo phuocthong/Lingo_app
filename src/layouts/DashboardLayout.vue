@@ -6,11 +6,7 @@
         <!-- Logo -->
         <div class="header-logo">
           <q-icon name="extension" class="logo-icon" />
-
           <div class="logo-text">Lingo</div>
-
-          <div class="logo-text">Lingo-Challenge</div>
-
         </div>
 
         <!-- Navigation -->
