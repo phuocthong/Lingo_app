@@ -211,7 +211,7 @@ const logout = () => {
   display: flex;
   min-height: 100vh;
   background: #ffffff;
-  max-width: 1800px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -482,7 +482,6 @@ const logout = () => {
 .profile-actions {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-
   gap: 32px;
   justify-content: center;
   margin-top: 24px;
@@ -501,26 +500,26 @@ const logout = () => {
 .level-btn {
   background: rgba(37, 99, 235, 0.3);
   color: #2563eb;
-  min-width: 193px;
+  min-width: 143px;
 }
 
 .xp-btn {
   background: rgba(37, 99, 235, 0.3);
   color: #2563eb;
   opacity: 0.5;
-  min-width: 251px;
+  min-width: 211px;
 }
 
 .edit-btn {
   background: rgba(37, 99, 235, 0.7);
   color: white;
-  min-width: 193px;
+  min-width: 223px;
 }
 
 .password-btn {
   background: rgba(107, 114, 128, 0.3);
   color: #374151;
-  min-width: 156px;
+  min-width: 166px;
   transition: all 0.3s ease;
 }
 
@@ -854,7 +853,7 @@ const logout = () => {
   }
 
   .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 
@@ -940,7 +939,7 @@ const logout = () => {
   }
 
   .stats-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 

@@ -1,3 +1,4 @@
+rewards-pagerewards-page
 <template>
   <q-page class="friends-page">
     <div class="friends-container">
@@ -159,7 +160,7 @@ const friends = ref([
   display: flex;
   min-height: 100vh;
   background: #ffffff;
-  max-width: 1800px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -350,6 +351,7 @@ const friends = ref([
   }
 
   .friends-content {
+    width: 100%;
     padding: 16px;
   }
 
@@ -373,6 +375,16 @@ const friends = ref([
   .challenge-btn {
     flex: 1;
     max-width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .friends-page {
+    padding: 0px !important;
+  }
+
+  .friends-content {
+    width: 100%;
   }
 }
 </style>

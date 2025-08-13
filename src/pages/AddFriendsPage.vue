@@ -181,7 +181,7 @@ const sendFriendRequest = (userId) => {
   display: flex;
   min-height: 100vh;
   background: #ffffff;
-  max-width: 1800px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -456,16 +456,29 @@ const sendFriendRequest = (userId) => {
 }
 
 @media (max-width: 768px) {
+  .page-header {
+    margin-bottom: 0px;
+  }
+
   .page-title {
     font-size: 24px;
   }
 
   .section-title {
     font-size: 20px;
+    margin: 0px;
   }
 
   .friend-request-item {
     padding: 16px;
+  }
+
+  .add-friends-content {
+    width: 100%;
+  }
+
+  .friend-requests-list {
+    margin-bottom: 0px;
   }
 
   .accept-btn,
@@ -473,6 +486,18 @@ const sendFriendRequest = (userId) => {
   .add-friend-btn {
     padding: 6px 12px;
     font-size: 14px;
+  }
+
+  .add-friends-page {
+    padding: 0px !important;
+  }
+
+  .search-section {
+    margin-top: 0;
+  }
+
+  .search-field {
+    height: 30px;
   }
 }
 </style>

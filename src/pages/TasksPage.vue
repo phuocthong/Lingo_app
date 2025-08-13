@@ -234,7 +234,7 @@ const claimReward = (taskId) => {
   display: flex;
   min-height: 100vh;
   background: #ffffff;
-  max-width: 1800px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -471,6 +471,14 @@ const claimReward = (taskId) => {
     min-width: 100px;
     padding: 6px 12px;
     font-size: 13px;
+  }
+
+  .tasks-page {
+    padding: 0px !important;
+  }
+
+  .tasks-content {
+    margin: 0px;
   }
 }
 </style>

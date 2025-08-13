@@ -904,6 +904,7 @@ const getCurrentLeaderboard = () => {
     flex-direction: column;
     max-width: 1024px;
     margin: 0 auto;
+    padding: 0;
   }
 
   .sidebar-section {
