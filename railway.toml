@@ -1,24 +1,15 @@
-[build]
-builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
-
-[deploy]
-startCommand = "npm run start:bun"
-healthcheckPath = "/"
-healthcheckTimeout = 300
-
 [[services]]
 name = "lingo-challenge-backend"
 source = "backend"
 
 [services.build]
 builder = "DOCKERFILE"
-dockerfilePath = "backend/Dockerfile"
+dockerfilePath = "Dockerfile"
 
 [services.deploy]
-startCommand = "bun run src/index.js"
 healthcheckPath = "/"
 healthcheckTimeout = 300
+restartPolicyType = "always"
 
 [[services]]
 name = "lingo-challenge-frontend"
@@ -29,6 +20,6 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [services.deploy]
-startCommand = "bun run dev"
-healthcheckPath = "/"
+healthcheckPath = "/health"
 healthcheckTimeout = 300
+restartPolicyType = "always"
