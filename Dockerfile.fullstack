@@ -1,0 +1,185 @@
+# Multi-stage build for fullstack deployment
+FROM node:20-alpine AS frontend-builder
+
+# Set working directory for frontend
+WORKDIR /app/frontend
+
+# Set npm config to avoid warnings and optimize
+RUN npm config set fund false && \
+    npm config set audit false
+
+# Copy frontend package files first
+COPY package.json package-lock.json* ./
+
+# Copy essential config files needed for quasar prepare
+COPY quasar.config.js ./
+COPY index.html ./
+COPY jsconfig.json ./
+
+# Install frontend dependencies
+RUN npm ci --no-audit --no-fund --maxsockets 1
+
+# Copy all frontend source code
+COPY . .
+
+# Build the frontend application with memory limit
+ENV NODE_OPTIONS="--max-old-space-size=1024"
+RUN npm run build
+
+# Backend stage with Bun
+FROM oven/bun:1.1.34-alpine AS backend-builder
+
+# Install curl and nginx for health checks and serving frontend
+RUN apk add --no-cache curl nginx
+
+# Set working directory for backend
+WORKDIR /app/backend
+
+# Copy backend package files first
+COPY backend/package.json backend/bun.lock* ./
+
+# Install backend dependencies
+RUN bun install --frozen-lockfile --production
+
+# Copy backend source code
+COPY backend/ ./
+
+# Final production stage
+FROM oven/bun:1.1.34-alpine AS production
+
+# Install required packages
+RUN apk add --no-cache curl nginx
+
+# Create app directory
+WORKDIR /app
+
+# Copy backend from builder
+COPY --from=backend-builder /app/backend ./backend
+
+# Copy frontend build from builder
+COPY --from=frontend-builder /app/frontend/dist/spa ./frontend
+
+# Create nginx config for serving frontend and proxying API
+RUN cat > /etc/nginx/nginx.conf << 'EOF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # Enable gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+
+    upstream backend {
+        server 127.0.0.1:3000;
+    }
+
+    server {
+        listen 80;
+        server_name _;
+        
+        # Serve frontend static files
+        location / {
+            root /app/frontend;
+            index index.html;
+            try_files $uri $uri/ /index.html;
+        }
+
+        # Proxy API requests to backend
+        location /api/ {
+            proxy_pass http://backend/api/;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
+        }
+
+        # Health check endpoint
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+
+        # Cache static assets
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            root /app/frontend;
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+    }
+}
+EOF
+
+# Create database directory
+RUN mkdir -p /app/backend/data
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV DATABASE_URL=./lingo-challenge.db
+ENV CORS_ORIGIN=*
+
+# Expose port 80 (nginx will handle both frontend and API routing)
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost/health || exit 1
+
+# Create startup script
+RUN cat > /app/start.sh << 'EOF'
+#!/bin/sh
+
+echo "Starting fullstack Lingo Challenge application..."
+
+# Start backend in background
+cd /app/backend
+echo "Setting up database..."
+if [ ! -f "./lingo-challenge.db" ]; then
+    echo "Running database migration..."
+    bun run db:migrate
+    echo "Running database seed..."
+    bun run db:seed
+fi
+
+echo "Starting backend server..."
+bun run src/index.js &
+BACKEND_PID=$!
+
+# Give backend time to start
+sleep 5
+
+# Start nginx
+echo "Starting nginx..."
+nginx -g 'daemon off;' &
+NGINX_PID=$!
+
+# Wait for either process to exit
+wait $BACKEND_PID $NGINX_PID
+EOF
+
+RUN chmod +x /app/start.sh
+
+# Start the application
+CMD ["/app/start.sh"]
