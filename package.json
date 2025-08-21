@@ -12,17 +12,7 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
-    "postinstall": "quasar prepare",
-    "backend:install": "cd backend && bun install",
-    "backend:install:npm": "cd backend && npm install",
-    "backend:setup": "cd backend && bun run db:migrate && bun run db:seed",
-    "backend:setup:npm": "cd backend && npm run db:migrate && npm run db:seed",
-    "backend:dev": "cd backend && bun src/auth-server.js",
-    "backend:dev:npm": "cd backend && npm run dev:node",
-    "setup": "bun run backend:install && bun run backend:setup",
-    "dev:full": "concurrently \"bun run backend:dev\" \"bun run dev\"",
-    "dev:npm": "concurrently \"npm run backend:dev:npm\" \"npm run dev\"",
-    "start:bun": "bun run start-bun.js"
+    "postinstall": "quasar prepare"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
@@ -35,7 +25,6 @@
     "@quasar/app-vite": "^2.1.0",
     "@vue/eslint-config-prettier": "^10.1.0",
     "autoprefixer": "^10.4.2",
-    "concurrently": "^9.2.0",
     "eslint": "^9.14.0",
     "eslint-plugin-vue": "^9.30.0",
     "globals": "^15.12.0",
