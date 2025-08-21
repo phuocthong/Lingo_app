@@ -11,8 +11,8 @@ RUN npm config set fund false && \
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies with optimizations
-RUN npm ci --omit=dev --omit=optional --no-audit --no-fund --maxsockets 1
+# Install all dependencies including dev dependencies for build
+RUN npm ci --no-audit --no-fund --maxsockets 1
 
 # Copy source code
 COPY . .
