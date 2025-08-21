@@ -22,7 +22,10 @@
     "setup": "bun run backend:install && bun run backend:setup",
     "dev:full": "concurrently \"bun run backend:dev\" \"bun run dev\"",
     "dev:npm": "concurrently \"npm run backend:dev:npm\" \"npm run dev\"",
-    "start:bun": "bun run start-bun.js"
+    "dev:fullstack": "node start-fullstack.js",
+    "start:bun": "bun run start-bun.js",
+    "docker:build": "docker build -f Dockerfile.fullstack -t lingo-challenge-fullstack .",
+    "docker:run": "docker run -p 80:80 lingo-challenge-fullstack"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",
