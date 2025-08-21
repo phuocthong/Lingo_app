@@ -116,15 +116,6 @@
             <span v-else>Đăng nhập</span>
           </button>
 
-          <!-- Demo Account Info -->
-          <div class="demo-info">
-            <p class="demo-title">🚀 Tài khoản demo:</p>
-            <div class="demo-accounts">
-              <button @click="fillDemoAccount('admin')" class="demo-btn">
-                Admin (admin / password123)
-              </button>
-            </div>
-          </div>
 
           <!-- Backend Status -->
           <div class="backend-status">
@@ -370,14 +361,6 @@ const simulateLogin = async () => {
   }
 }
 
-// Fill demo account credentials
-const fillDemoAccount = (accountType) => {
-  loginForm.username = accountType
-  loginForm.password = 'password123'
-  loginForm.rememberMe = false
-
-  showSimpleNotification(`Đã điền thông tin tài khoản ${accountType}`, 'info')
-}
 </script>
 
 <style scoped>
@@ -635,42 +618,6 @@ const fillDemoAccount = (accountType) => {
   transform: none;
 }
 
-/* Demo Info */
-.demo-info {
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 16px;
-}
-
-.demo-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: #0369a1;
-  margin: 0 0 12px 0;
-}
-
-.demo-accounts {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.demo-btn {
-  background: #0ea5e9;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.demo-btn:hover {
-  background: #0284c7;
-}
 
 /* Backend Status */
 .backend-status {
