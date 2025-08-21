@@ -3,11 +3,15 @@ set -e
 
 echo "Starting Render build for backend..."
 
-# Remove existing lock file to avoid conflicts
+# Remove any existing lock files
 rm -f package-lock.json
+rm -f yarn.lock
 
-# Install dependencies with legacy peer deps to avoid conflicts
-npm install --legacy-peer-deps --production
+# Clear npm cache
+npm cache clean --force
+
+# Install dependencies without creating lock file
+npm install --no-package-lock --production
 
 # Try to setup database
 npm run db:migrate:node || echo "Migration failed, continuing..."
