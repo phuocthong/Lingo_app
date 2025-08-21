@@ -8,14 +8,14 @@ services:
     env: node
     buildFilter:
       paths:
-      - backend/**
+        - backend/**
     envVars:
-    - key: NODE_ENV
-      value: production
-    - key: PORT
-      value: 3001
-  
-  - type: web  
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+
+  - type: web
     name: lingo-challenge-frontend
     runtime: node
     buildCommand: npm install && npm run build
@@ -24,8 +24,8 @@ services:
     env: node
     buildFilter:
       paths:
-      - src/**
-      - package.json
+        - src/**
+        - package.json
     envVars:
-    - key: NODE_ENV
-      value: production
+      - key: NODE_ENV
+        value: production
