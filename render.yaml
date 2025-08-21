@@ -1,31 +1,10 @@
 services:
   - type: web
-    name: lingo-challenge-backend
-    runtime: node
-    buildCommand: cd backend && bash render-build.sh
-    startCommand: cd backend && npm run start:node
+    name: lingo-challenge
+    runtime: docker
     plan: free
-    env: node
-    buildFilter:
-      paths:
-        - backend/**
     envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: 3001
-
-  - type: web
-    name: lingo-challenge-frontend
-    runtime: node
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
-    plan: free
-    env: node
-    buildFilter:
-      paths:
-        - src/**
-        - package.json
-    envVars:
-      - key: NODE_ENV
-        value: production
+    - key: NODE_ENV
+      value: production
+    - key: PORT
+      value: 3001
