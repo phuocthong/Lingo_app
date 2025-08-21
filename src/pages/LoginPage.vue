@@ -116,7 +116,6 @@
             <span v-else>Đăng nhập</span>
           </button>
 
-
           <!-- Backend Status -->
           <div class="backend-status">
             <div
@@ -360,7 +359,6 @@ const simulateLogin = async () => {
     }
   }
 }
-
 </script>
 
 <style scoped>
@@ -617,7 +615,6 @@ const simulateLogin = async () => {
   cursor: not-allowed;
   transform: none;
 }
-
 
 /* Backend Status */
 .backend-status {
