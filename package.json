@@ -12,6 +12,7 @@
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
     "build": "quasar build",
+    "start": "npm run backend:dev:npm",
     "postinstall": "quasar prepare",
     "backend:install": "cd backend && bun install",
     "backend:install:npm": "cd backend && npm install",
