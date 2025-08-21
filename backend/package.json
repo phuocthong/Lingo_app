@@ -9,6 +9,7 @@
     "dev:node": "node --loader=esbuild-register/loader src/index-node.js",
     "start": "bun run src/index.js",
     "start:node": "node --loader=esbuild-register/loader src/index-node.js",
+    "start:prod": "node src/index-node.js",
     "dev:elysia": "node --loader=esbuild-register/loader src/index.js",
     "dev:bun": "bun run src/index.js",
     "start:bun": "bun run src/index.js",
