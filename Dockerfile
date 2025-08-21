@@ -8,13 +8,18 @@ WORKDIR /app
 RUN npm config set fund false && \
     npm config set audit false
 
-# Copy package files and Quasar config
-COPY package.json package-lock.json* quasar.config.js ./
+# Copy package files first
+COPY package.json package-lock.json* ./
+
+# Copy essential config files needed for quasar prepare
+COPY quasar.config.js ./
+COPY index.html ./
+COPY jsconfig.json ./
 
 # Install all dependencies including dev dependencies for build
 RUN npm ci --no-audit --no-fund --maxsockets 1
 
-# Copy source code
+# Copy all source code
 COPY . .
 
 # Build the application with memory limit
