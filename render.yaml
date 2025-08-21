@@ -2,7 +2,7 @@ services:
   - type: web
     name: lingo-challenge-backend
     runtime: node
-    buildCommand: cd backend && npm install && npm run db:migrate && npm run db:seed
+    buildCommand: cd backend && rm -f package-lock.json && npm install --legacy-peer-deps && npm run db:migrate:node && npm run db:seed:node
     startCommand: cd backend && npm run start:node
     plan: free
     env: node
