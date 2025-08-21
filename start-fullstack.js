@@ -14,7 +14,7 @@ console.log('📡 Starting backend server...')
 const backend = spawn('bun', ['run', 'backend:dev'], {
   cwd: __dirname,
   stdio: 'inherit',
-  shell: true
+  shell: true,
 })
 
 // Start frontend
@@ -22,7 +22,7 @@ console.log('🎨 Starting frontend development server...')
 const frontend = spawn('npm', ['run', 'dev'], {
   cwd: __dirname,
   stdio: 'inherit',
-  shell: true
+  shell: true,
 })
 
 // Handle process termination
